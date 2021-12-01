@@ -1,58 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "common/common.h"
 
-#define filtersize (sizeof(filter) / sizeof(int))
+//the filtersize can be changed to change the size of the filter above
+//1 = solution to puzzle 1
+//3 = solution to puzzle 2
+#define filtersize (3)
 
-//get a new point of sensor data, returns 1 if the filtered data is more than the last
-//new data is added to a list, the size of the filter.
-//every time a new value gets added a value gets pushed out
-//the sum of values gets lowered by the ammount that gets pushed out
-//and increases by the new value,
-//this means we can also calculate the difference between the new value, and the old value
-//if the new value is higher then the old value, then the sum increases
-//this way the new sum doesn't have to be calculated which saves time when calculating the sum
-
-//the filter used is a circular buffer
-//this makes the addition if a new value in linear time, rather then O(n) when shifting the values from the end of the buffer to the beginning
-
-int parseNewSonarPoint(int newSonarData)
+//The solution has been improved compared to the first solution,
+//the previous commit featured a buffer in wich the values were saved
+//but in changing back from reading from an array, we can compare to the outgoing value directly
+int SensorReport(int* values, int size)
 {
-    static int filter[3];
-    static unsigned int index;
+    int numIncreases = 0;
 
-    //get the datapoints from the filter
-    const int outval = filter[index];
-    filter[index] = newSonarData;
-
-    //add the new sornar point to the filter
-    //the filter acts as a circular buffer
-    index++;
-    if(index >= sizeof(filter) / sizeof(int))
+    for(int i = filtersize; i < size; i++)
     {
-        index = 0;
-    }
+        const int curValue = values[i];
+        const int outValue = values[i - filtersize];
 
-    //check if the filter isn't filled yet
-    if(outval == 0)
-    {
-        return 0;
+        if(curValue > outValue)
+            numIncreases++;
     }
-    
-    return newSonarData > outval;
+    return numIncreases;
 }
 
 int main()
 {
-	int increasecount = 0;
-	int value = 0;
+    int* sensorValues = NULL;
+	int size = 0;
+	stdinToIntArr(&sensorValues, &size);
 
-	//get values directly from stdin
-    while(scanf("%d", &value) > 0)
-    {
-        increasecount += parseNewSonarPoint(value);
-    }
+    const int increasecount = SensorReport(sensorValues, size);
 
     printf("increases: %d\n", increasecount);
 
+    free(sensorValues);
     return 0;
 }
