@@ -20,6 +20,5 @@ $(commonOBJ): $(commonSRC)
 
 .PHONY: clean
 clean :
-	echo "$(commonOBJ) will be removed"
-	rm $(OUT)
 	rm $(commonOBJ)
+	rm $(OUT)
