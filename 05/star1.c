@@ -51,6 +51,9 @@ int mapVents(char** input, int size)
 		}
 	}
 
+	//cleanup after ourselves
+	free(map);
+
 	return ventCount;
 }
 
@@ -64,6 +67,9 @@ int main(void)
 	//do the challange
 	int DangerZones = mapVents(input, size);
 	printf("Number of dangerous area's: %d\n", DangerZones);
+
+	//cleanup after ourselves
+	freeStrArr(input, size);
 
 	return 0;
 }
