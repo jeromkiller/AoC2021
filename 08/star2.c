@@ -54,7 +54,7 @@ char findMissingBit(unsigned char val1, unsigned char val2)
 	return countBits(result) == 1;
 }
 
-unsigned char findBitPattern(char compareVal, char* list, char bitCount, char* decodedSegs, int lookingFor)
+unsigned char findBitPattern(char compareVal, char* list, char bitCount, char* decodedSegs)
 {
 	for(int i = 0; i < 10; i++)
 	{
