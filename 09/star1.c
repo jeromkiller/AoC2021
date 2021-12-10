@@ -5,10 +5,6 @@
 
 #include "common/common.h"
 
-#define heightMapBorder 2
-
-//unsigned char val = heightMap[j + (i * width)];
-
 //the heightmap is bordered in memory, the pointer points to the start of the original heightmap
 int countLowPoints(unsigned char* heightmap, int height, int width)
 {
