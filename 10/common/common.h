@@ -91,44 +91,74 @@ listItem* dRefList_RemoveItem(listItem* item);
 
 //TODO: create a function to remove all items and free the list 
 
-
+//Generic Stack structure, can be used to store 
 typedef struct genericStack_struct
 {
-	void* stackStart;
-	size_t stackSize;
-	size_t itemSize;
-	int stackPointer;
+	void* stackStart;	//pointer to the stack data
+	size_t stackSize;	//number of bytes in the stack
+	size_t itemSize;	//number of bytes for each item on the stack
+	int stackPointer;	//possition for the top item
 }genStack;
 
+//greate a generic stack, has room for 25 items
+//in: size_t itemSize, size of the items you want to store on the stack
+//returns: genStack*, a pointer to your newly created generic stack
 genStack* genStackCreate(size_t itemSize);
 
+//push an item onto the generic stack
+//the stack grows as needed
+//in: genStack** stackRef, A refference to the stack so it can be modified to grow
+//in: void* item, pointer to an item to copy to the stack
 void genStackPush(genStack** stackRef, void* item);
 
+//pop an item from the generic stack
+//the stack shrinks as needed
+//in: genStack** stackRef, A refference to the stack so it can be modified to shrink
+//returns: void*, a pointer to the item just popped from the stack (to be derefferenced as needed by the user)
 void* genStackPop(genStack** stackRef);
 
-void* genStackPeek(genStack** stackRef);
+//peek at the top item on the stack
+//in: genStack* stack, pointer to the stack
+//returns: void*, a pointer to the item just peeked from the stack (to be derefferenced as needed by the user)
+void* genStackPeek(genStack* stack);
 
+//frees the stack and then the stack object itself
+//in: genStack*, a pointer to the stack to free
 void genStackFree(genStack* stack);
 
+//clear the items off the stack,
+//in: genStack** stackRef, a refference to the stack so it can be modified to shrink
 void genStackClear(genStack** stackRef);
 
+//get the number of items on the stack
+//in: genStack* a pointer to the stack
 int genStackCount(genStack* stack);
 
 
 //functions to control the generic stack as a char stack
+//see above for a better discription
+
+//create a stack for char
 genStack* charStackCreate(void);
 
+//push a char to the stack
 void charStackPush(genStack** stackRef, char value);
 
+//pop a char from the stack
 char charStackPop(genStack** stackRef);
 
-char charStackPeek(genStack** stackRef);
+//peek a char from the stack
+char charStackPeek(genStack* stack);
 
 //functions to control the generic stack as an int stack
+//create a stack for longs
 genStack* longStackCreate(void);
 
+//push a long to the stack
 void longStackPush(genStack** stackRef, long value);
 
+//pop a long from the stack
 long longStackPop(genStack** stackRef);
 
-long longStackPeek(genStack** stackRef);
+//peek a long from the stack
+long longStackPeek(genStack* stack);

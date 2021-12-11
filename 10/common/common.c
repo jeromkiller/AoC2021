@@ -326,10 +326,10 @@ void* genStackPop(genStack** stackRef)
 	return returnBuffer;
 }
 
-void* genStackPeek(genStack** stackRef)
+void* genStackPeek(genStack* stackRef)
 {
 	static char returnBuffer[MAX_ITEM_SIZE];
-	genStack* stack = *stackRef;
+	genStack* stack = stackRef;
 
 	//check if we are able to pop items
 	if((size_t)stack->stackPointer < stack->itemSize)
@@ -379,9 +379,9 @@ char charStackPop(genStack** stackRef)
 	return *(char*)genStackPop(stackRef);
 }
 
-char charStackPeek(genStack** stackRef)
+char charStackPeek(genStack* stack)
 {
-	return *(char*)genStackPeek(stackRef);
+	return *(char*)genStackPeek(stack);
 }
 
 //functions to controll the generic stack as a int stack
@@ -400,7 +400,7 @@ long longStackPop(genStack** stackRef)
 	return *(long*)genStackPop(stackRef);
 }
 
-long longStackPeek(genStack** stackRef)
+long longStackPeek(genStack* stack)
 {
-	return *(long*)genStackPeek(stackRef);
+	return *(long*)genStackPeek(stack);
 }
