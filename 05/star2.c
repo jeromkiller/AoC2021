@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 #include "common/common.h"
 
 #define MAP_SIZE 1000
@@ -64,9 +66,6 @@ int mapVents(char** input, int size)
 			ventCount += map[x][y] >= 2;
 		}
 	}
-
-	//clean up after ourselves
-	free(map);
 
 	return ventCount;
 }

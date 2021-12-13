@@ -22,3 +22,7 @@ $(commonOBJ): $(commonSRC)
 clean :
 	rm $(commonOBJ)
 	rm $(OUT)
+
+.PHONY: benchmark
+benchmark: $(OUT)
+	hyperfine --warmup 50 --export-markdown benchmark.md "./star1 < Input.txt" "./star2 < Input.txt"

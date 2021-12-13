@@ -51,9 +51,6 @@ int mapVents(char** input, int size)
 		}
 	}
 
-	//cleanup after ourselves
-	free(map);
-
 	return ventCount;
 }
 
