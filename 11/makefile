@@ -25,4 +25,4 @@ clean :
 
 .PHONY: benchmark
 benchmark: $(OUT)
-	hyperfine --warmup 2 --export-markdown benchmark.md "./star1 < Input.txt" "./star2 < Input.txt"
+	hyperfine --warmup 50 --export-markdown benchmark.md "./star1 < Input.txt" "./star2 < Input.txt"
