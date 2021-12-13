@@ -1,50 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "common/common.h"
 
 //putting this in advanced, because i feel like the second star is going to have me deal with these things dying
 typedef struct fishyInfo_struct
 {
-	char spawnCycle;
+	unsigned long breedingFish[7];
+	unsigned long babyFish[3];
 }fishyInfo;
 
-int simulateFishes(listItem* rootFish, int generations)
+int simulateFishes(fishyInfo* fishes, int generations)
 {
 	//simulate the fishes spawning
-	listItem* firstFish = rootFish;
 	//loop for every generation
 	for(int gen = 0; gen < generations; gen++)
 	{
-		//walk over the fish list, and spawn new fish when needed
-		listItem* curFish = firstFish;
-		while(curFish)
-		{
-			fishyInfo* fish = (fishyInfo*)curFish->item;
-			if(--(fish->spawnCycle) < 0)
-			{
-				//reset the spawncycle and spawn a fish
-				fish->spawnCycle = 6;
-
-				//spawn a new fish, and add it to the list -> the assignment tells me to add it to the end of the list, but in the middle is faster
-				fishyInfo* newFish = (fishyInfo*)malloc(sizeof(newFish));
-				newFish->spawnCycle = 8;
-				curFish = dRefList_AddItem(&curFish, newFish);
-			}
-			curFish = curFish->next;
-		}
+		//the fish are summed up in breed cycles
+		//every generation a differnet group gets to spawn a bunch of new fish
+		//these new fish do not get to participate, until they grow up
+		//the group newly grown up fishes fall into lags one group behind breedgroup
+		int breedCycle = gen % 7;
+		int growupCycle = (gen -1) % 7;
+		fishes->breedingFish[growupCycle] += fishes->babyFish[0];
+		fishes->babyFish[0] = fishes->babyFish[1];
+		fishes->babyFish[1] = fishes->babyFish[2];
+		fishes->babyFish[2] = fishes->breedingFish[breedCycle];
 	}
 
-	//now count all the nodes in the list
-	listItem* countItem = firstFish;
-	int listCount = 0;
-	while(countItem)
+	//loop over the breed groups and count how many fish are in there
+	unsigned long fishCount = 0;
+	for(int i = 0; i < (int)(sizeof(fishyInfo) / sizeof(unsigned long)); i++)
 	{
-		listCount++;
-		countItem = countItem->next;
+		fishCount += ((unsigned long*)fishes)[i];
 	}
 
-	printf("After %d generations we have %d fish\n", generations, listCount);
-	return listCount;
+	printf("After %d generations we have %ld fish\n", generations, fishCount);
+	return fishCount;
 }
 
 int main(void)
@@ -60,15 +52,11 @@ int main(void)
 	strArrToInt8Arr(stringArr, elements, &startingVals);
 
 	//put the initial values into the fishy struct, and put those in a list
-	fishyInfo* fish = (fishyInfo*)malloc(sizeof(fishyInfo));
-	fish->spawnCycle = startingVals[0];
-	listItem* rootFishItem = dRefList_AddItem(NULL, fish);
-	listItem* newFishItem = rootFishItem;
-	for(int i = 1; i < elements; i++)
+	fishyInfo* fishes = (fishyInfo*)malloc(sizeof(fishyInfo));
+	memset(fishes, 0, sizeof(fishyInfo));
+	for(int i = 0; i < elements; i++)
 	{
-		fish = (fishyInfo*)malloc(sizeof(fishyInfo));
-		fish->spawnCycle = startingVals[i];
-		newFishItem = dRefList_AddItem(&newFishItem, fish);
+		fishes->breedingFish[(int)startingVals[i]]++;
 	}
 
 	//we now have the input parsed, and don't need the original input anymore
@@ -77,7 +65,7 @@ int main(void)
 	free(inputString);
 
 	//perform the challange
-	simulateFishes(rootFishItem, 80);
+	simulateFishes(fishes, 80);
 
 	return 0;
 }
