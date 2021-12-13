@@ -17,8 +17,11 @@ The solutions are probably a bit hacky.
 
 ## building it yourself:
 ---
-Run the ```make``` command to build any of the solutions
- 
+Run the ```make``` command to build any of the solutions.
+The only include files not defined in the C standard can be found in the common folder and written by me.
+
+Solutions can be ran by running ```./star1 < Input.txt``` and ```./star2 < Input.txt```
+
 
 ## benchmarks:
 ---
