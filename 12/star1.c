@@ -4,7 +4,6 @@
 #include <limits.h>
 
 #include "common/common.h"
-#include <unistd.h>
 
 //The idea of walking over a graph feels a bit intimidating
 //especialy since I lost my algorithms and datastructures book when moving

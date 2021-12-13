@@ -14,8 +14,16 @@ But i'll be trying my best to keep up.
 
 The solutions are probably a bit hacky.
 
+
+## building it yourself:
+---
+Run the ```make``` command to build any of the solutions
+ 
+
 ## benchmarks:
+---
 Benchmarks are ran with hyperfine
+Code is run on an AMD Ryzen 5 3600 at around 3.95Ghz inside WSL so there might be some overhead gumming up the results
 
 | Day | Result | Star 1 Mean [ms] | Star 2 Mean [ms] |
 |:---|---|---:|---:|
