@@ -29,7 +29,7 @@ Benchmarks are ran with hyperfine
 Code is run on an AMD Ryzen 5 3600 at around 3.95Ghz inside WSL so there might be some overhead gumming up the results
 
 | Day | Result | Star 1 Mean [ms] | Star 2 Mean [ms] |
-|:---|---|---:|---:|
+|:---|:---:|:---:|:---:|
 | 1  |⭐⭐| 4.0 ± 0.3 | 4.0 ± 0.3 |
 | 2  |⭐⭐| 3.8 ± 0.2 | 3.8 ± 0.3 |
 | 3  |⭐⭐| 4.1 ± 0.2 | 4.2 ± 0.3 |
@@ -43,3 +43,5 @@ Code is run on an AMD Ryzen 5 3600 at around 3.95Ghz inside WSL so there might b
 | 11 |⭐⭐| 4.1 ± 0.3 | 4.6 ± 0.4 |
 | 12 |⭐⭐| 5.3 ± 0.3 | 19.1 ± 0.6 |
 | 13 |⭐⭐| 6.4 ± 0.2 | 6.7 ± 0.2 |
+| 14 |⭐⭐| 3.5 ± 0.4 | 3.7 ± 0.2 |
+| 15 |⭐| 19.3 ± 1.4 | - |
