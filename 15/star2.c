@@ -8,7 +8,7 @@
 
 typedef struct graphNode_struct
 {
-	int distance;
+	long distance;
 	int posX;
 	int posY;
 	struct graphNode_struct* prevNode;
@@ -76,7 +76,32 @@ graphNode* checkGraphNode(int x, int y, int val, pQueue* NeighborList, graphNode
 	return neighborNode;
 }
 
-int findShortestPath(char** graphPoints, int numLines)
+int getQuadBit(int x, int y, int width, int height)
+{
+	int xQuad = x / width;
+	int yQuad = y / height;
+	int bit = (1 << ((yQuad * 5) + xQuad + 4));
+	return bit;
+}
+
+int getPossitionValue(int x, int y, int width, int height, int graphPoints[height][width])
+{
+	//in what quadrant is this point
+	int xQuad = x / width;
+	int yQuad = y / height;
+	int quadValOffset = yQuad + xQuad;
+	int val = graphPoints[y % height][x % width];
+	val = ((val & 0x0F) + quadValOffset);
+	if(val > 9)
+	{
+		val = val % 10;
+		val++;
+	}
+
+	return val;
+}
+
+int findShortestPath(int width, int height, int graphPoints[height][width])
 {
 	//make two priority queues,
 	//one for points we have to deal with,
@@ -89,14 +114,13 @@ int findShortestPath(char** graphPoints, int numLines)
 	graphNode* startNode = createGraphNode(0, 0);
 	startNode->distance = 0;
 
-	int width = strlen(graphPoints[0]);
-	graphNode* endNode = createGraphNode(width - 1, numLines - 1);
+	graphNode* endNode = createGraphNode((width * 5) - 1, (height * 5) - 1);
 
 	//end the end node to the list
 	pQueueAddItem(NeighborList, endNode, graphCompare);
 	
 	graphNode* checkNode = startNode;
-
+	int numNodes = 0;
 	while(NeighborList->numItems > 0)
 	{
 		//if we expanded into the end node, that means we found the shortest path
@@ -106,72 +130,62 @@ int findShortestPath(char** graphPoints, int numLines)
 		}
 		int x = checkNode->posX;
 		int y = checkNode->posY;
+
 		//check if the neighbours of the node have been visited
 		//if not, calculate its distance and push it on the queue
 		if(x > 0)	//check left neighbour
 		{
-			char val = graphPoints[y][x - 1];
-			if(val < 10)
+			int checkX = x -1;
+			int checkY = y;
+			int val = getPossitionValue(checkX, checkY, width, height, graphPoints);
+			if((graphPoints[checkY % height][checkX % width] & getQuadBit(checkX, checkY, width, height)) == 0)
 			{
-				checkGraphNode(x - 1, y, val, NeighborList, checkNode);
+				checkGraphNode(checkX, checkY, val, NeighborList, checkNode);
 			}
 		}
-		if(x < width - 1)	//check right neighbor
+		if(x < ((width * 5) - 1))	//check right neighbor
 		{
-			char val = graphPoints[y][x + 1];
-			if(val < 10)
+			int checkX = x +1;
+			int checkY = y;
+			int val = getPossitionValue(checkX, checkY, width, height, graphPoints);
+			if((graphPoints[checkY % height][checkX % width] & getQuadBit(checkX, checkY, width, height)) == 0)
 			{
-				checkGraphNode(x + 1, y, val, NeighborList, checkNode);
+				checkGraphNode(checkX, checkY, val, NeighborList, checkNode);
 			}
 		}
 		if(y > 0)	//check upper neighbour
 		{
-			char val = graphPoints[y - 1][x];
-			if(val < 10)
+			int checkX = x;
+			int checkY = y -1;
+			int val = getPossitionValue(checkX, checkY, width, height, graphPoints);
+			if((graphPoints[checkY % height][checkX % width] & getQuadBit(checkX, checkY, width, height)) == 0)
 			{
-				checkGraphNode(x, y - 1, val, NeighborList, checkNode);
+				checkGraphNode(checkX, checkY, val, NeighborList, checkNode);
 			}
 		}
-		if(y < numLines - 1)	//check lower neighbour
+		if(y < ((height * 5) - 1))	//check lower neighbour
 		{
-			char val = graphPoints[y + 1][x];
-			if(val < 10)
+			int checkX = x;
+			int checkY = y +1;
+			int val = getPossitionValue(checkX, checkY, width, height, graphPoints);
+			if((graphPoints[checkY % height][checkX % width] & getQuadBit(checkX, checkY, width, height)) == 0)
 			{
-				checkGraphNode(x, y + 1, val, NeighborList, checkNode);
+				checkGraphNode(checkX, checkY, val, NeighborList, checkNode);
 			}
 		}
 
 
 		//mark the current item as visited
-		graphPoints[y][x] += 10;
+		//mark the bit for the quadrant as visited
+		graphPoints[y % height][x % width] |= getQuadBit(x, y, width, height);
 		//add it to the visited list
 		pQueueAddItem(VisitedList, checkNode, graphCompare);
 
 		//get the next node with the lowest priority
 		checkNode = pQueuePop(NeighborList);
+		numNodes++;
 	}
 	printf("Nodes visited: %d\n", VisitedList->numItems);
-
-	printf("Path to end node:\n");
-
-	for(int y = 0; y < numLines; y++)
-	{
-		for(int x = 0; x < width; x++)
-		{
-			graphNode* returnNode = endNode;
-			while(returnNode)
-			{
-				if(x == returnNode->posX && y == returnNode->posY)
-				{
-					printf("\033[0;31m");
-				}
-				returnNode = returnNode->prevNode;
-			}
-			int val = graphPoints[y][x];
-			printf("%d\033[0m", val < 10 ? val : val -10);
-		}
-		printf("\n");
-	}
 
 	return endNode->distance;
 }
@@ -180,23 +194,27 @@ int main(void)
 {
 	//load all input
 	char** input = NULL;
-	int numLines = 0;
-	stdinToStrArr(&input, &numLines, 120);
+	int height = 0;
+	stdinToStrArr(&input, &height, 120);
 
-	//turn all characters into numbers
-	int strLength = strlen(input[0]);
-	for(int i = 0; i < numLines; i++)
+	//turn all characters into numbers and write them to an int array
+	//the lowest 4 bits denote the danger level of a part of the cave
+	//the higher 28 bits denote if the point has been visited in a certain quadrant
+	int width = strlen(input[0]);
+
+	int caveDistances[height][width];
+	for(int i = 0; i < height; i++)
 	{
-		for(int j = 0; j < strLength; j++)
+		for(int j = 0; j < width; j++)
 		{
-			input[i][j] = input[i][j] - '0';
+			caveDistances[i][j] = input[i][j] - '0';
 		}
 	}
 
 	//perform the challange?
-	int shortestPathLength = findShortestPath(input, numLines);
+	int shortestPathLength = findShortestPath(height, width, caveDistances);
 		
-	printf("shorted path found %d\n", shortestPathLength);
+	printf("safest path found %d\n", shortestPathLength);
 
 	return 0;
 }
